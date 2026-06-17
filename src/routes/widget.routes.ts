@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from "express";
 import multer from "multer";
 import { upload } from "../lib/upload";
 import {
-  listDraftItems,
+  listActiveItems,
   createDraftItem,
   deleteDraftItem,
   submitDrafts,
@@ -33,7 +33,7 @@ function handleUpload(req: Request, res: Response, next: NextFunction): void {
   });
 }
 
-widgetRouter.get("/:token/items", listDraftItems);
+widgetRouter.get("/:token/items", listActiveItems);
 widgetRouter.post("/:token/items", handleUpload, createDraftItem);
 widgetRouter.delete("/:token/items/:id", deleteDraftItem);
 widgetRouter.post("/:token/submit", submitDrafts);

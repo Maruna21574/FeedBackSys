@@ -242,6 +242,17 @@
 }
 .fbw-list-delete:hover { color: #b91c1c !important; }
 
+.fbw-list-item-submitted { background: #eef2ff !important; border-color: #c7d2fe; }
+.fbw-list-num-submitted { background: #2563eb !important; }
+.fbw-list-status {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #2563eb !important;
+  margin-top: 3px;
+}
+
 .fbw-list-footer {
   padding-top: 10px;
   margin-top: 4px;
@@ -308,6 +319,12 @@ body.fbw-pick-mode * {
   z-index: 2147482999;
 }
 .fbw-pin:hover { background: #b91c1c !important; }
+.fbw-pin.fbw-pin-submitted {
+  background: #2563eb !important;
+  border-color: #fff;
+  opacity: 0.85;
+}
+.fbw-pin.fbw-pin-submitted:hover { background: #1d4ed8 !important; opacity: 1; }
 
 /* ---- Modal ---- */
 .fbw-modal-overlay {

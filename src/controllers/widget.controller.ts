@@ -32,10 +32,11 @@ function serializeItem(item: FeedbackItem) {
 }
 
 /**
- * Vrati neodoslane (draft) poznamky pre dany projekt - pouziva widget na
- * obnovenie pinov po reloade stranky.
+ * Vrati aktivne poznamky pre dany projekt - drafty aj odoslane (new/in_progress).
+ * Widget ich pouziva na zobrazenie pinov. Piny zmiznu az ked admin nastavi
+ * stav na "done" alebo "rejected".
  */
-export async function listDraftItems(req: Request, res: Response): Promise<void> {
+export async function listActiveItems(req: Request, res: Response): Promise<void> {
   const project = await getProjectByToken(req.params.token);
   if (!project) {
     res.status(404).json({ error: "Projekt nenájdený." });
@@ -44,7 +45,10 @@ export async function listDraftItems(req: Request, res: Response): Promise<void>
 
   const url = typeof req.query.url === "string" ? req.query.url : undefined;
 
-  const where: Record<string, unknown> = { projectId: project.id, status: "draft" };
+  const where: Record<string, unknown> = {
+    projectId: project.id,
+    status: { in: ["draft", "new", "in_progress"] },
+  };
   if (url) where.url = url;
 
   const items = await prisma.feedbackItem.findMany({ where, orderBy: { createdAt: "asc" } });

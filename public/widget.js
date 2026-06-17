@@ -192,7 +192,8 @@
   }
 
   function renderMenu() {
-    var count = state.items.length;
+    var draftCount = getDraftItems().length;
+    var totalCount = state.items.length;
 
     panelBody.appendChild(
       h("button", { class: "fbw-menu-btn fbw-primary", type: "button", onclick: startPickMode }, [
@@ -204,17 +205,17 @@
     panelBody.appendChild(
       h("button", { class: "fbw-menu-btn", type: "button", onclick: showSavedList }, [
         svgIcon("list"),
-        h("span", { text: "Zobraziť uložené poznámky" }),
-        h("span", { class: "fbw-count", text: String(count) }),
+        h("span", { text: "Zobraziť poznámky" }),
+        h("span", { class: "fbw-count", text: String(totalCount) }),
       ])
     );
 
     var submitBtn = h(
       "button",
       { class: "fbw-menu-btn", type: "button", onclick: submitAll },
-      [svgIcon("send"), h("span", { text: "Odoslať všetky poznámky" })]
+      [svgIcon("send"), h("span", { text: "Odoslať nové poznámky (" + draftCount + ")" })]
     );
-    if (count === 0) submitBtn.setAttribute("disabled", "disabled");
+    if (draftCount === 0) submitBtn.setAttribute("disabled", "disabled");
     panelBody.appendChild(submitBtn);
   }
 
@@ -240,30 +241,28 @@
 
     state.items.forEach(function (item) {
       var pinIndex = currentPageItems.indexOf(item);
+      var isDraft = item.status === "draft";
       var numEl =
         pinIndex >= 0
-          ? h("span", { class: "fbw-list-num", text: String(pinIndex + 1) })
+          ? h("span", { class: "fbw-list-num" + (isDraft ? "" : " fbw-list-num-submitted"), text: String(pinIndex + 1) })
           : h("span", { class: "fbw-list-num fbw-list-num-other", text: "•" });
 
+      var statusLabels = { draft: "Rozpracované", new: "Nové", in_progress: "V riešení" };
+      var statusEl = isDraft ? null : h("span", { class: "fbw-list-status", text: statusLabels[item.status] || item.status });
+
+      var actionEl = isDraft
+        ? h("button", { class: "fbw-list-delete", type: "button", "aria-label": "Zmazať poznámku", onclick: function () { deleteItem(item.id); } }, ["×"])
+        : null;
+
       list.appendChild(
-        h("div", { class: "fbw-list-item" }, [
+        h("div", { class: "fbw-list-item" + (isDraft ? "" : " fbw-list-item-submitted") }, [
           numEl,
           h("div", { class: "fbw-list-content" }, [
             h("div", { class: "fbw-list-text", text: item.note }),
             h("div", { class: "fbw-list-url", text: item.pageTitle || item.url }),
+            statusEl,
           ]),
-          h(
-            "button",
-            {
-              class: "fbw-list-delete",
-              type: "button",
-              "aria-label": "Zmazať poznámku",
-              onclick: function () {
-                deleteItem(item.id);
-              },
-            },
-            ["×"]
-          ),
+          actionEl,
         ])
       );
     });
@@ -285,10 +284,15 @@
     );
   }
 
+  function getDraftItems() {
+    return state.items.filter(function (item) { return item.status === "draft"; });
+  }
+
   function updateBadge() {
     var badge = launcher.querySelector("#fbw-launcher-badge");
-    if (state.items.length > 0) {
-      badge.textContent = String(state.items.length);
+    var draftCount = getDraftItems().length;
+    if (draftCount > 0) {
+      badge.textContent = String(draftCount);
       badge.style.display = "";
     } else {
       badge.style.display = "none";
@@ -575,11 +579,12 @@
     var items = getCurrentPageItems();
 
     items.forEach(function (item, index) {
+      var isDraft = item.status === "draft";
       var pin = h(
         "div",
         {
-          class: "fbw-pin",
-          title: item.note,
+          class: "fbw-pin" + (isDraft ? "" : " fbw-pin-submitted"),
+          title: item.note + (isDraft ? "" : " [" + item.status + "]"),
           onclick: function () {
             state.view = "list";
             openPanel();
@@ -634,12 +639,13 @@
   }
 
   function submitAll() {
-    if (state.items.length === 0) {
-      showToast("Nemáte žiadne neuložené poznámky.", true);
+    var drafts = getDraftItems();
+    if (drafts.length === 0) {
+      showToast("Nemáte žiadne neuložené poznámky na odoslanie.", true);
       return;
     }
     var confirmed = window.confirm(
-      "Naozaj chcete odoslať všetky poznámky (" + state.items.length + ")? Po odoslaní ich už nebude možné upraviť."
+      "Naozaj chcete odoslať " + drafts.length + " poznámok? Po odoslaní ich už nebude možné upraviť."
     );
     if (!confirmed) return;
 
@@ -650,12 +656,10 @@
           return data;
         });
       })
-      .then(function (data) {
-        state.items = [];
-        renderPins();
-        updateBadge();
+      .then(function () {
+        fetchItems();
         closePanel();
-        showToast(data.message || "Ďakujeme za spätnú väzbu.");
+        showToast("Ďakujeme za spätnú väzbu. Pripomienky boli odoslané.");
       })
       .catch(function (err) {
         showToast(err.message || "Odoslanie zlyhalo.", true);

@@ -90,9 +90,10 @@ describe("odoslanie vsetkych poznamok (submit flow)", () => {
     expect(fs.existsSync(pdfPath)).toBe(true);
   });
 
-  it("po odoslani su drafty prazdne a dalsie odoslanie vrati 400", async () => {
+  it("po odoslani nie su ziadne drafty a dalsie odoslanie vrati 400", async () => {
     const listRes = await request(app).get(`/api/widget/${token}/items`);
-    expect(listRes.body.items).toEqual([]);
+    const drafts = listRes.body.items.filter((i: { status: string }) => i.status === "draft");
+    expect(drafts).toEqual([]);
 
     const submitRes = await request(app).post(`/api/widget/${token}/submit`);
     expect(submitRes.status).toBe(400);
