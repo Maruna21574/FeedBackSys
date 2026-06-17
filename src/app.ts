@@ -24,6 +24,7 @@ const FileStore = sessionFileStore(session);
 
 export const app = express();
 
+app.set("trust proxy", 1);
 app.disable("x-powered-by");
 
 // crossOriginResourcePolicy je vypnuty, pretoze /widget.js, /widget.css a obrazky
