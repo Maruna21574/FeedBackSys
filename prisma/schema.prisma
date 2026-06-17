@@ -1,0 +1,135 @@
+// Prisma schema pre Feedback nastroj (MVP)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Pozn.: SQLite v Prisma nepodporuje natívne enumy, preto su tieto stavy
+// ulozene ako String a validovane na urovni aplikacie (src/lib/constants.ts).
+// Role: "admin" | "client"
+// ProjectStatus: "active" | "archived"
+// FeedbackStatus: "draft" | "new" | "in_progress" | "done" | "rejected"
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String
+
+  // Prepojenie klientskeho uzivatela na firmu/klienta (Client). Pre admina je null.
+  clientId  Int?
+  client    Client?  @relation(fields: [clientId], references: [id])
+
+  internalNotes InternalNote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  note      String?
+
+  users     User[]
+  projects  Project[]
+  batches   FeedbackBatch[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id        Int           @id @default(autoincrement())
+
+  clientId  Int
+  client    Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  name      String
+  url       String
+  token     String        @unique
+  status    String        @default("active")
+
+  feedbackItems FeedbackItem[]
+  batches       FeedbackBatch[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FeedbackItem {
+  id        Int      @id @default(autoincrement())
+
+  projectId Int
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Pouzivatel (klient), ktoremu sa pripomienka priradi pri odoslani. Null = anonymne / nepriradene.
+  userId    Int?
+
+  url            String
+  pageTitle      String?
+  note           String
+  screenshotPath String?
+  attachmentPath String?
+
+  xPosition      Float
+  yPosition      Float
+  viewportWidth  Int
+  viewportHeight Int
+  cssSelector    String?
+
+  status           String   @default("draft")
+
+  submittedBatchId Int?
+  batch            FeedbackBatch? @relation(fields: [submittedBatchId], references: [id])
+
+  internalNotes InternalNote[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  submittedAt DateTime?
+
+  @@index([projectId, status])
+  @@index([projectId, url])
+}
+
+model FeedbackBatch {
+  id          Int      @id @default(autoincrement())
+
+  projectId   Int
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  clientId    Int
+  client      Client   @relation(fields: [clientId], references: [id])
+
+  pdfPath     String?
+  totalItems  Int
+
+  items       FeedbackItem[]
+
+  submittedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model InternalNote {
+  id             Int      @id @default(autoincrement())
+
+  feedbackItemId Int
+  feedbackItem   FeedbackItem @relation(fields: [feedbackItemId], references: [id], onDelete: Cascade)
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  note String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

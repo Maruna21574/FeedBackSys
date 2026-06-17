@@ -1,0 +1,118 @@
+<div class="page-header">
+  <div>
+    <h1>Pripomienka #<%= item.id %></h1>
+    <p class="subtitle">
+      <%= item.project.client.name %> ·
+      <a href="/admin/projects/<%= item.project.id %>"><%= item.project.name %></a>
+    </p>
+  </div>
+  <div class="actions">
+    <span class="badge badge-<%= FEEDBACK_STATUS_COLORS[item.status] %>"><%= FEEDBACK_STATUS_LABELS[item.status] %></span>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <div>
+    <div class="card">
+      <div class="card-header"><h3>Screenshot</h3></div>
+      <% if (item.screenshotPath) { %>
+        <div class="screenshot-wrap">
+          <img src="/uploads/screenshots/<%= item.screenshotPath %>" alt="Screenshot pripomienky" />
+          <div
+            class="marker-dot"
+            style="left: <%= (item.xPosition / item.viewportWidth * 100).toFixed(2) %>%; top: <%= (item.yPosition / item.viewportHeight * 100).toFixed(2) %>%;"
+          ><%= item.id %></div>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          Bez screenshotu.<br />
+          Pozícia kliknutia: X <%= item.xPosition %>px, Y <%= item.yPosition %>px (viewport <%= item.viewportWidth %>×<%= item.viewportHeight %>px)
+        </div>
+      <% } %>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Poznámka klienta</h3></div>
+      <p style="white-space: pre-wrap;"><%= item.note %></p>
+      <% if (item.attachmentPath) { %>
+        <a href="/uploads/attachments/<%= item.attachmentPath %>" target="_blank" rel="noopener" class="btn btn-sm btn-secondary">Stiahnuť prílohu</a>
+      <% } %>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Interné poznámky</h3></div>
+      <% if (item.internalNotes.length === 0) { %>
+        <p class="text-muted text-sm">Žiadne interné poznámky.</p>
+      <% } else { %>
+        <% item.internalNotes.forEach(function (n) { %>
+          <div class="mt-1" style="padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border);">
+            <div class="text-sm" style="white-space: pre-wrap;"><%= n.note %></div>
+            <div class="text-muted text-sm mt-1"><%= n.user.name %> · <%= new Date(n.createdAt).toLocaleString('sk-SK') %></div>
+          </div>
+        <% }) %>
+      <% } %>
+      <form method="post" action="/admin/feedback/<%= item.id %>/notes" class="mt-2">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <div class="form-group">
+          <label for="note">Nová interná poznámka</label>
+          <textarea id="note" name="note" rows="3" required placeholder="Viditeľné len pre administrátorov"></textarea>
+        </div>
+        <button type="submit" class="btn btn-secondary">Pridať poznámku</button>
+      </form>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="card-header"><h3>Zmena stavu</h3></div>
+      <% FEEDBACK_EDITABLE_STATUSES.forEach(function (s) { %>
+        <form method="post" action="/admin/feedback/<%= item.id %>/status" class="mt-1">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <input type="hidden" name="redirectTo" value="/admin/feedback/<%= item.id %>" />
+          <input type="hidden" name="status" value="<%= s %>" />
+          <button
+            type="submit"
+            class="btn btn-sm w-full <%= item.status === s ? 'btn-primary' : (s === 'rejected' ? 'btn-outline-danger' : 'btn-secondary') %>"
+            <%= item.status === s ? 'disabled' : '' %>
+          ><%= FEEDBACK_STATUS_LABELS[s] %></button>
+        </form>
+      <% }) %>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>Technické informácie</h3></div>
+      <table class="kv-table">
+        <tr>
+          <td>URL stránky</td>
+          <td><a href="<%= item.url %>" target="_blank" rel="noopener" class="truncate"><%= item.url %></a></td>
+        </tr>
+        <tr>
+          <td>Názov stránky</td>
+          <td><%= item.pageTitle || '-' %></td>
+        </tr>
+        <tr>
+          <td>CSS selektor</td>
+          <td><code><%= item.cssSelector || '-' %></code></td>
+        </tr>
+        <tr>
+          <td>Pozícia kliknutia</td>
+          <td>X: <%= item.xPosition %>px, Y: <%= item.yPosition %>px</td>
+        </tr>
+        <tr>
+          <td>Veľkosť okna</td>
+          <td><%= item.viewportWidth %> × <%= item.viewportHeight %>px</td>
+        </tr>
+        <tr>
+          <td>Vytvorené</td>
+          <td><%= new Date(item.createdAt).toLocaleString('sk-SK') %></td>
+        </tr>
+        <% if (item.submittedAt) { %>
+          <tr>
+            <td>Odoslané</td>
+            <td><%= new Date(item.submittedAt).toLocaleString('sk-SK') %></td>
+          </tr>
+        <% } %>
+      </table>
+    </div>
+  </div>
+</div>

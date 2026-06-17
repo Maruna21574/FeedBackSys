@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autana – Demo web</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      background: #111111;
+      color: #fff;
+    }
+    header .logo {
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+    }
+    header nav a {
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-left: 24px;
+      font-size: 0.92rem;
+    }
+    header nav a:hover { color: #fff; }
+
+    .hero {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      padding: 90px 32px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.6rem;
+      max-width: 760px;
+      margin: 0 auto 16px;
+    }
+    .hero p {
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin: 0 auto 28px;
+      color: #dbeafe;
+    }
+    #cta-button {
+      display: inline-block;
+      background: #fff;
+      color: #1d4ed8;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 32px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #cta-button:hover { background: #e9f0ff; }
+
+    main { max-width: 960px; margin: 0 auto; padding: 60px 32px; }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+    .feature {
+      background: #f4f5f7;
+      border-radius: 10px;
+      padding: 24px;
+    }
+    .feature h3 { margin-bottom: 8px; font-size: 1.1rem; }
+    .feature p { color: #6b7280; font-size: 0.92rem; }
+
+    .pricing-table {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+    .pricing-table .plan {
+      border: 1px solid #e3e6eb;
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+    }
+    .pricing-table .plan.featured {
+      border-color: #2563eb;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+    }
+    .pricing-table .plan h3 { margin-bottom: 4px; }
+    .pricing-table .plan .price {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #2563eb;
+      margin: 12px 0;
+    }
+    .pricing-table .plan ul {
+      list-style: none;
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-top: 12px;
+    }
+    .pricing-table .plan li { margin-bottom: 6px; }
+
+    section.cta-bottom {
+      text-align: center;
+      padding-bottom: 20px;
+    }
+
+    footer {
+      background: #111111;
+      color: #9ca3af;
+      padding: 36px 32px;
+      text-align: center;
+      font-size: 0.88rem;
+    }
+    footer p { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">AUTANA</div>
+    <nav>
+      <a href="#features">Služby</a>
+      <a href="#pricing">Ceny</a>
+      <a href="#contact">Kontakt</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Pomáhame malým firmám rásť online pomocou moderných webových stránok a marketingu</h1>
+    <p>Navrhneme, vytvoríme a budeme spravovať váš web tak, aby vám prinášal nových klientov.</p>
+    <button id="cta-button" type="button">Kontaktujte nás</button>
+  </section>
+
+  <main>
+    <section id="features" class="features">
+      <div class="feature">
+        <h3>Webové stránky</h3>
+        <p>Moderný, rýchly a responzívny web prispôsobený vašej značke.</p>
+      </div>
+      <div class="feature">
+        <h3>Online marketing</h3>
+        <p>Reklamné kampane a SEO, ktoré privedú na váš web nových návštevníkov.</p>
+      </div>
+      <div class="feature">
+        <h3>Podpora a údržba</h3>
+        <p>Pravidelné aktualizácie, zálohy a technická podpora.</p>
+      </div>
+    </section>
+
+    <section id="pricing" class="pricing-table">
+      <div class="plan">
+        <h3>Štart</h3>
+        <div class="price">49 €/mes</div>
+        <ul>
+          <li>Jednostránkový web</li>
+          <li>Základné SEO</li>
+          <li>E-mailová podpora</li>
+        </ul>
+      </div>
+      <div class="plan featured">
+        <h3>Profi</h3>
+        <div class="price">99 €/mes</div>
+        <ul>
+          <li>Viacstránkový web</li>
+          <li>Pokročilé SEO</li>
+          <li>Mesačný report</li>
+        </ul>
+      </div>
+      <div class="plan">
+        <h3>Business</h3>
+        <div class="price">199 €/mes</div>
+        <ul>
+          <li>E-shop riešenie</li>
+          <li>Marketingové kampane</li>
+          <li>Prioritná podpora</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cta-bottom">
+      <h2>Páči sa vám tento návrh webu?</h2>
+      <p>Použite tlačidlo "Feedback" v pravom dolnom rohu a napíšte nám svoje pripomienky priamo k tejto stránke.</p>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <p>Autana s.r.o. · Hlavná 1, 811 01 Bratislava</p>
+    <p>Kontatky: info@autana.example · +421 900 123 456</p>
+    <p>&copy; 2026 Autana. Všetky práva vyhradené.</p>
+  </footer>
+
+  <script src="http://localhost:3000/widget.js" data-project="demo7f3a9c2e8b1d4f6a0c5e9b2d7f1a4c8e0b3d6f9a2c5"></script>
+</body>
+</html>

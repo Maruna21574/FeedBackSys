@@ -1,0 +1,70 @@
+<div class="page-header">
+  <div>
+    <h1>Projekty</h1>
+    <p class="subtitle">Správa projektov a vkladacích kódov pre widget.</p>
+  </div>
+</div>
+
+<div class="detail-grid" style="grid-template-columns: 2fr 1fr;">
+  <div>
+    <% if (projects.length === 0) { %>
+      <div class="card">
+        <div class="empty-state">Zatiaľ neboli vytvorené žiadne projekty.</div>
+      </div>
+    <% } else { %>
+      <% projects.forEach(function (project) { %>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3><a href="/admin/projects/<%= project.id %>"><%= project.name %></a></h3>
+              <div class="text-sm text-muted">
+                <%= project.client.name %> ·
+                <a href="<%= project.url %>" target="_blank" rel="noopener"><%= project.url %></a>
+              </div>
+            </div>
+            <div class="flex gap-1">
+              <span class="badge badge-<%= project.status === 'active' ? 'blue' : 'gray' %>"><%= PROJECT_STATUS_LABELS[project.status] %></span>
+              <span class="badge badge-gray"><%= project._count.feedbackItems %> pripomienok</span>
+            </div>
+          </div>
+          <div class="snippet-box">
+            <code class="snippet-code">&lt;script src="<%= appUrl %>/widget.js" data-project="<%= project.token %>"&gt;&lt;/script&gt;</code>
+            <button type="button" class="btn btn-sm btn-secondary copy-btn">Kopírovať</button>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="card-header"><h3>Nový projekt</h3></div>
+      <% if (clients.length === 0) { %>
+        <p class="text-muted text-sm">Najprv vytvorte klienta na stránke <a href="/admin/clients">Klienti</a>.</p>
+      <% } else { %>
+        <form method="post" action="/admin/projects">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <div class="form-group">
+            <label for="clientId">Klient</label>
+            <select id="clientId" name="clientId" required>
+              <% clients.forEach(function (c) { %>
+                <option value="<%= c.id %>"><%= c.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="name">Názov projektu</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label for="url">URL webu klienta</label>
+            <input type="url" id="url" name="url" placeholder="https://klient.sk" required />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary w-full">Vytvoriť projekt</button>
+          </div>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</div>

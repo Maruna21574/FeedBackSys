@@ -1,0 +1,11 @@
+<% if (pagination.totalPages > 1) { %>
+  <nav class="pagination">
+    <% if (pagination.page > 1) { %>
+      <a href="?<%= pagination.qs({ page: pagination.page - 1 }) %>" class="btn btn-secondary btn-sm">&larr; Predošlá</a>
+    <% } %>
+    <span class="pagination-info">Strana <%= pagination.page %> z <%= pagination.totalPages %> (<%= pagination.total %> záznamov)</span>
+    <% if (pagination.page < pagination.totalPages) { %>
+      <a href="?<%= pagination.qs({ page: pagination.page + 1 }) %>" class="btn btn-secondary btn-sm">Ďalšia &rarr;</a>
+    <% } %>
+  </nav>
+<% } %>

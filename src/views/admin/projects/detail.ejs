@@ -1,0 +1,86 @@
+<div class="page-header">
+  <div>
+    <h1><%= project.name %></h1>
+    <p class="subtitle">
+      <%= project.client.name %> ·
+      <a href="<%= project.url %>" target="_blank" rel="noopener">Otvoriť web klienta</a>
+    </p>
+  </div>
+  <div class="actions">
+    <span class="badge badge-<%= project.status === 'active' ? 'blue' : 'gray' %>"><%= PROJECT_STATUS_LABELS[project.status] %></span>
+    <form method="post" action="/admin/projects/<%= project.id %>/status">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <% if (project.status === 'active') { %>
+        <input type="hidden" name="status" value="archived" />
+        <button type="submit" class="btn btn-secondary btn-sm">Archivovať</button>
+      <% } else { %>
+        <input type="hidden" name="status" value="active" />
+        <button type="submit" class="btn btn-secondary btn-sm">Aktivovať</button>
+      <% } %>
+    </form>
+  </div>
+</div>
+
+<div class="card section">
+  <div class="card-header"><h3>Vkladací kód (widget)</h3></div>
+  <div class="snippet-box">
+    <code class="snippet-code">&lt;script src="<%= appUrl %>/widget.js" data-project="<%= project.token %>"&gt;&lt;/script&gt;</code>
+    <button type="button" class="btn btn-sm btn-secondary copy-btn">Kopírovať</button>
+  </div>
+  <p class="form-hint">Vložte tento kód pred koniec <code>&lt;/body&gt;</code> na stránke klienta.</p>
+</div>
+
+<div class="page-header">
+  <h2>Pripomienky</h2>
+</div>
+
+<%
+  var exportQs = [];
+  if (filters.url) exportQs.push('url=' + encodeURIComponent(filters.url));
+  if (filters.status) exportQs.push('status=' + encodeURIComponent(filters.status));
+  var exportUrl = '/admin/projects/' + project.id + '/export' + (exportQs.length ? '?' + exportQs.join('&') : '');
+%>
+<form method="get" action="/admin/projects/<%= project.id %>" class="filters-bar">
+  <div class="form-group">
+    <label for="url">Stránka (URL)</label>
+    <select id="url" name="url">
+      <option value="">Všetky stránky</option>
+      <% urls.forEach(function (u) { %>
+        <option value="<%= u %>" <%= filters.url === u ? 'selected' : '' %>><%= u %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="status">Stav</label>
+    <select id="status" name="status">
+      <option value="">Všetky</option>
+      <% Object.keys(FEEDBACK_STATUS_LABELS).forEach(function (s) { %>
+        <option value="<%= s %>" <%= filters.status === s ? 'selected' : '' %>><%= FEEDBACK_STATUS_LABELS[s] %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="form-group">
+    <button type="submit" class="btn btn-secondary">Filtrovať</button>
+  </div>
+  <% if (filters.url || filters.status) { %>
+    <div class="form-group">
+      <a href="/admin/projects/<%= project.id %>" class="btn btn-ghost">Vymazať filtre</a>
+    </div>
+  <% } %>
+  <div class="form-group">
+    <a href="<%= exportUrl %>" class="btn btn-primary">Exportovať PDF</a>
+  </div>
+</form>
+
+<% if (feedbackItems.length === 0) { %>
+  <div class="card">
+    <div class="empty-state">Žiadne pripomienky podľa zadaných filtrov.</div>
+  </div>
+<% } else { %>
+  <div class="feedback-grid">
+    <% feedbackItems.forEach(function (item) { %>
+      <%- include('../../partials/feedback-card', { item: item, showProject: false, showActions: item.status !== 'draft', redirectTo: '/admin/projects/' + project.id }) %>
+    <% }) %>
+  </div>
+  <%- include('../../partials/pagination', { pagination: pagination }) %>
+<% } %>

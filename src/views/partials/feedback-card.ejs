@@ -1,0 +1,44 @@
+<%
+  // Locals: item (FeedbackItem s project.client ak showProject), showProject?, showActions?, redirectTo?
+  var showProject = typeof showProject !== 'undefined' && showProject;
+  var showActions = typeof showActions !== 'undefined' && showActions;
+  var quickStatuses = ['in_progress', 'done', 'rejected'];
+%>
+<div class="feedback-card">
+  <div class="thumb">
+    <% if (item.screenshotPath) { %>
+      <img src="/uploads/screenshots/<%= item.screenshotPath %>" alt="Náhľad pripomienky" />
+    <% } else { %>
+      <div class="no-shot">Bez screenshotu</div>
+    <% } %>
+  </div>
+  <div class="body">
+    <div class="top-row">
+      <span class="badge badge-<%= FEEDBACK_STATUS_COLORS[item.status] %>"><%= FEEDBACK_STATUS_LABELS[item.status] %></span>
+      <span class="text-muted text-sm">#<%= item.id %></span>
+    </div>
+    <div class="note"><%= item.note %></div>
+    <div class="meta">
+      <% if (showProject && item.project) { %>
+        <span><%= item.project.client.name %> · <%= item.project.name %></span>
+      <% } %>
+      <a href="<%= item.url %>" target="_blank" rel="noopener" class="truncate"><%= item.pageTitle || item.url %></a>
+      <span><%= new Date(item.submittedAt || item.createdAt).toLocaleString('sk-SK') %></span>
+    </div>
+    <div class="footer-actions">
+      <a href="/admin/feedback/<%= item.id %>" class="btn btn-sm btn-secondary">Detail</a>
+      <% if (showActions) { %>
+        <% quickStatuses.forEach(function (s) { %>
+          <% if (item.status !== s) { %>
+            <form method="post" action="/admin/feedback/<%= item.id %>/status" style="display:inline;">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+              <input type="hidden" name="status" value="<%= s %>" />
+              <input type="hidden" name="redirectTo" value="<%= typeof redirectTo !== 'undefined' ? redirectTo : '/admin/feedback' %>" />
+              <button type="submit" class="btn btn-sm <%= s === 'rejected' ? 'btn-outline-danger' : 'btn-secondary' %>"><%= FEEDBACK_STATUS_LABELS[s] %></button>
+            </form>
+          <% } %>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+</div>

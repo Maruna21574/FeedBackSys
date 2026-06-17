@@ -1,0 +1,18 @@
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/admin" class="navbar-brand"><span class="dot"></span> Feedback nástroj</a>
+    <div class="navbar-links">
+      <a href="/admin" class="<%= currentPath === '/admin' ? 'active' : '' %>">Dashboard</a>
+      <a href="/admin/clients" class="<%= currentPath.startsWith('/admin/clients') ? 'active' : '' %>">Klienti</a>
+      <a href="/admin/projects" class="<%= currentPath.startsWith('/admin/projects') ? 'active' : '' %>">Projekty</a>
+      <a href="/admin/feedback" class="<%= currentPath.startsWith('/admin/feedback') ? 'active' : '' %>">Feedbacky</a>
+    </div>
+    <div class="navbar-user">
+      <span><%= currentUser.name %></span>
+      <form method="post" action="/logout">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit">Odhlásiť sa</button>
+      </form>
+    </div>
+  </div>
+</nav>

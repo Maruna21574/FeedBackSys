@@ -1,0 +1,28 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-brand"><span class="dot"></span> Feedback nástroj</div>
+    <h1>Prihlásenie</h1>
+    <p class="subtitle">Prihláste sa do administrácie alebo klientského portálu.</p>
+
+    <%- include('../partials/flash') %>
+
+    <form method="post" action="/login">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autofocus />
+      </div>
+      <div class="form-group">
+        <label for="password">Heslo</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+      <button type="submit" class="btn btn-primary w-full">Prihlásiť sa</button>
+    </form>
+
+    <div class="login-demo-hint">
+      Demo prístupy (po spustení <code>npm run seed</code>):<br />
+      Admin: <code>admin@example.com</code> / <code>admin123</code><br />
+      Klient: <code>klient@example.com</code> / <code>klient123</code>
+    </div>
+  </div>
+</div>

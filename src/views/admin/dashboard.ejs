@@ -1,0 +1,71 @@
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="subtitle">Prehľad klientov, projektov a pripomienok.</p>
+  </div>
+</div>
+
+<div class="stats-grid section">
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.clientsCount %></div>
+    <div class="stat-label">Klienti</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.activeProjectsCount %></div>
+    <div class="stat-label">Aktívne projekty</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.newCount %></div>
+    <div class="stat-label">Nové pripomienky</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.inProgressCount %></div>
+    <div class="stat-label">V riešení</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value"><%= stats.totalFeedbackCount %></div>
+    <div class="stat-label">Odoslané pripomienky celkom</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="card-header">
+    <h2>Posledné odoslania</h2>
+    <a href="/admin/feedback" class="btn btn-secondary btn-sm">Zobraziť všetky pripomienky</a>
+  </div>
+
+  <% if (recentBatches.length === 0) { %>
+    <div class="card">
+      <div class="empty-state">Zatiaľ neboli odoslané žiadne pripomienky.</div>
+    </div>
+  <% } else { %>
+    <div class="card">
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Projekt</th>
+              <th>Klient</th>
+              <th>Počet pripomienok</th>
+              <th>Odoslané</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% recentBatches.forEach(function (batch) { %>
+              <tr>
+                <td><%= batch.project.name %></td>
+                <td><%= batch.client.name %></td>
+                <td><%= batch.totalItems %></td>
+                <td><%= new Date(batch.submittedAt).toLocaleString('sk-SK') %></td>
+                <td class="actions">
+                  <a href="/admin/projects/<%= batch.project.id %>" class="btn btn-sm btn-secondary">Projekt</a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% } %>
+</div>

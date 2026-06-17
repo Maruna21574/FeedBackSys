@@ -1,0 +1,59 @@
+<%
+  var qs = [];
+  if (filters.projectId) qs.push('projectId=' + encodeURIComponent(filters.projectId));
+  if (filters.status) qs.push('status=' + encodeURIComponent(filters.status));
+  if (filters.url) qs.push('url=' + encodeURIComponent(filters.url));
+  var redirectTo = '/admin/feedback' + (qs.length ? '?' + qs.join('&') : '');
+%>
+<div class="page-header">
+  <div>
+    <h1>Feedbacky</h1>
+    <p class="subtitle">Všetky odoslané pripomienky zo všetkých projektov.</p>
+  </div>
+</div>
+
+<form method="get" action="/admin/feedback" class="filters-bar">
+  <div class="form-group">
+    <label for="projectId">Projekt</label>
+    <select id="projectId" name="projectId">
+      <option value="">Všetky projekty</option>
+      <% projects.forEach(function (p) { %>
+        <option value="<%= p.id %>" <%= String(filters.projectId) === String(p.id) ? 'selected' : '' %>><%= p.client.name %> – <%= p.name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="status">Stav</label>
+    <select id="status" name="status">
+      <option value="">Všetky stavy</option>
+      <% FEEDBACK_EDITABLE_STATUSES.forEach(function (s) { %>
+        <option value="<%= s %>" <%= filters.status === s ? 'selected' : '' %>><%= FEEDBACK_STATUS_LABELS[s] %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="url">URL obsahuje</label>
+    <input type="text" id="url" name="url" value="<%= filters.url %>" placeholder="/cennik" />
+  </div>
+  <div class="form-group">
+    <button type="submit" class="btn btn-secondary">Filtrovať</button>
+  </div>
+  <% if (filters.projectId || filters.status || filters.url) { %>
+    <div class="form-group">
+      <a href="/admin/feedback" class="btn btn-ghost">Vymazať filtre</a>
+    </div>
+  <% } %>
+</form>
+
+<% if (items.length === 0) { %>
+  <div class="card">
+    <div class="empty-state">Žiadne pripomienky podľa zadaných filtrov.</div>
+  </div>
+<% } else { %>
+  <div class="feedback-grid">
+    <% items.forEach(function (item) { %>
+      <%- include('../../partials/feedback-card', { item: item, showProject: true, showActions: true, redirectTo: redirectTo }) %>
+    <% }) %>
+  </div>
+  <%- include('../../partials/pagination', { pagination: pagination }) %>
+<% } %>

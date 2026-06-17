@@ -1,0 +1,89 @@
+<div class="page-header">
+  <div>
+    <h1>Môj projekt</h1>
+    <p class="subtitle">Prehľad vašich projektov a odoslaných pripomienok.</p>
+  </div>
+</div>
+
+<% if (projects.length === 0) { %>
+  <div class="card">
+    <div class="empty-state">Pre vás zatiaľ nebol vytvorený žiadny projekt.</div>
+  </div>
+<% } %>
+
+<% projects.forEach(function (project) { %>
+  <div class="card section">
+    <div class="card-header">
+      <div>
+        <h2><%= project.name %></h2>
+        <div class="text-sm text-muted"><%= project.url %></div>
+      </div>
+      <a href="<%= project.url %>" target="_blank" rel="noopener" class="btn btn-primary">Otvoriť web a pripomienkovať</a>
+    </div>
+
+    <% if (project.feedbackItems.length === 0) { %>
+      <p class="text-muted text-sm">Zatiaľ ste neodoslali žiadne pripomienky pre tento projekt.</p>
+    <% } else { %>
+      <div class="feedback-grid">
+        <% project.feedbackItems.forEach(function (item) { %>
+          <div class="feedback-card">
+            <div class="thumb">
+              <% if (item.screenshotPath) { %>
+                <img src="/uploads/screenshots/<%= item.screenshotPath %>" alt="Náhľad pripomienky" />
+              <% } else { %>
+                <div class="no-shot">Bez screenshotu</div>
+              <% } %>
+            </div>
+            <div class="body">
+              <div class="top-row">
+                <span class="badge badge-<%= FEEDBACK_STATUS_COLORS[item.status] %>"><%= FEEDBACK_STATUS_LABELS[item.status] %></span>
+                <span class="text-muted text-sm">#<%= item.id %></span>
+              </div>
+              <div class="note"><%= item.note %></div>
+              <div class="meta">
+                <a href="<%= item.url %>" target="_blank" rel="noopener" class="truncate"><%= item.pageTitle || item.url %></a>
+                <span><%= new Date(item.submittedAt).toLocaleString('sk-SK') %></span>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+<% }) %>
+
+<div class="card section">
+  <div class="card-header"><h2>PDF reporty</h2></div>
+  <% if (batches.length === 0) { %>
+    <p class="text-muted text-sm">Zatiaľ neboli vygenerované žiadne reporty.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Projekt</th>
+            <th>Počet pripomienok</th>
+            <th>Odoslané</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% batches.forEach(function (batch) { %>
+            <tr>
+              <td><%= batch.project.name %></td>
+              <td><%= batch.totalItems %></td>
+              <td><%= new Date(batch.submittedAt).toLocaleString('sk-SK') %></td>
+              <td>
+                <% if (batch.pdfPath) { %>
+                  <a href="/client/reports/<%= batch.id %>" class="btn btn-sm btn-secondary">Stiahnuť PDF</a>
+                <% } else { %>
+                  <span class="text-muted text-sm">Generuje sa...</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>

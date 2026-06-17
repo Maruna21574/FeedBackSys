@@ -1,0 +1,15 @@
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="/client" class="navbar-brand"><span class="dot"></span> Feedback nástroj</a>
+    <div class="navbar-links">
+      <a href="/client" class="<%= currentPath === '/client' ? 'active' : '' %>">Môj projekt</a>
+    </div>
+    <div class="navbar-user">
+      <span><%= currentUser.name %></span>
+      <form method="post" action="/logout">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button type="submit">Odhlásiť sa</button>
+      </form>
+    </div>
+  </div>
+</nav>
